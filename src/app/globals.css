@@ -1,0 +1,299 @@
+@import "tailwindcss";
+
+/*
+ * MDA CAR — Design tokens (brand spec).
+ * NOTE: --color-accent-gold uses the spec placeholder #D4AF37.
+ * TO CONFIRM BEFORE LAUNCH: re-sample the exact gold hex from the real MDA CAR
+ * logo file (Instagram/Facebook assets were not programmatically accessible).
+ */
+@theme {
+  --font-sans: "Sora", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+    sans-serif;
+
+  --color-night: #0a0a0a; /* dominant canvas */
+  --color-coal: #141414; /* secondary canvas */
+  --color-surface: #1c1c1c; /* cards / inputs */
+  --color-graphite: #262626; /* subtle raised areas */
+
+  --color-gold: #d4af37; /* REPLACE with sampled logo gold before launch */
+  --color-gold-hover: #e8c765;
+
+  /* Translucent panel tone — lets the ambient body background glow through
+     full-bleed sections while staying dark enough for text contrast. */
+  --color-obsidian: rgba(10, 10, 10, 0.86);
+
+  --color-cream: #f5f5f5;
+  --color-steel: #b0b0b0;
+  --color-steel-dark: #8a8a8a;
+
+  --color-line: rgba(255, 255, 255, 0.08);
+  --color-line-strong: rgba(255, 255, 255, 0.16);
+  --color-line-gold: rgba(212, 175, 55, 0.4);
+
+  --color-whatsapp: #25d366;
+}
+
+:root {
+  /* Brand tokens (kept 1:1 with the spec for future theming) */
+  --color-bg-primary: #0a0a0a;
+  --color-bg-secondary: #141414;
+  --color-bg-surface: #1c1c1c;
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #b0b0b0;
+  --color-accent-gold: #d4af37;
+  --color-accent-gold-hover: #e8c765;
+  --color-border-subtle: rgba(255, 255, 255, 0.08);
+  --color-border-gold: rgba(212, 175, 55, 0.4);
+
+  color-scheme: dark;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    color: var(--color-cream);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    overflow-x: clip;
+
+    /* Ambient luxury backdrop: warm gold glow top-right, deep bronze pool
+       bottom-left, a whisper of diagonal hairline texture, and fine film
+       grain over the base black — all fixed so it reads as one continuous
+       atmosphere as the page scrolls, glowing subtly through the
+       translucent (--color-obsidian) section panels above it. */
+    background-color: var(--color-night);
+    background-image:
+      radial-gradient(1100px 680px at 88% -8%, rgba(212, 175, 55, 0.1), transparent 60%),
+      radial-gradient(950px 780px at -10% 106%, rgba(139, 101, 38, 0.13), transparent 62%),
+      radial-gradient(1400px 900px at 50% 38%, rgba(255, 255, 255, 0.02), transparent 72%),
+      repeating-linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.012) 0px,
+        rgba(255, 255, 255, 0.012) 1px,
+        transparent 1px,
+        transparent 3px
+      ),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.025 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-repeat: no-repeat, no-repeat, no-repeat, repeat, repeat;
+    background-attachment: fixed, fixed, fixed, fixed, fixed;
+    background-size:
+      auto,
+      auto,
+      auto,
+      auto,
+      140px 140px;
+  }
+
+  ::selection {
+    background: rgba(212, 175, 55, 0.3);
+    color: #ffffff;
+  }
+
+  /* Visible, on-brand focus state for keyboard users */
+  :focus-visible {
+    outline: 2px solid var(--color-gold);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  input,
+  select,
+  textarea {
+    font-size: 16px; /* prevents iOS zoom on focus */
+  }
+
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    opacity: 0.7;
+  }
+}
+
+/*
+ * Floating WhatsApp bubble — small entrance pop + gentle pulse ring.
+ * Default state is fully visible: animations only enrich, never hide.
+ */
+@keyframes wa-pop-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.55);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes wa-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.42);
+  }
+  70% {
+    box-shadow: 0 0 0 16px rgba(37, 211, 102, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(37, 211, 102, 0);
+  }
+}
+
+.wa-fab {
+  animation:
+    wa-pop-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.55s backwards,
+    wa-pulse 3s ease-in-out 2.4s infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wa-fab {
+    animation: none !important;
+  }
+}
+
+/*
+ * Progressive scroll-reveal. The .reveal class is only added by JS after mount,
+ * so no-JS users and crawlers always see fully visible content.
+ */
+.reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition:
+    opacity 0.6s ease,
+    transform 0.6s ease;
+  will-change: opacity, transform;
+}
+
+.reveal.reveal-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/*
+ * Cinematic hero entrance — staggered fade/rise for eyebrow, headline,
+ * subheadline and CTA row. Pure CSS (no JS, no layout dependency), so it
+ * always plays for both humans and crawlers see the final text immediately
+ * server-rendered; this only affects the paint, never the DOM/content.
+ */
+@keyframes hero-rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+    filter: blur(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: blur(0);
+  }
+}
+
+.hero-stagger > * {
+  animation: hero-rise 0.9s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+}
+
+.hero-stagger > *:nth-child(1) {
+  animation-delay: 0.05s;
+}
+.hero-stagger > *:nth-child(2) {
+  animation-delay: 0.16s;
+}
+.hero-stagger > *:nth-child(3) {
+  animation-delay: 0.28s;
+}
+.hero-stagger > *:nth-child(4) {
+  animation-delay: 0.4s;
+}
+.hero-stagger > *:nth-child(5) {
+  animation-delay: 0.52s;
+}
+
+/* Slow, cinematic Ken-Burns drift on hero/page-header imagery. Very subtle —
+   luxury motion is slow, not showy. */
+@keyframes cinematic-zoom {
+  from {
+    transform: scale(1.08);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+.cinematic-image {
+  animation: cinematic-zoom 8s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Refined scroll cue used on the homepage hero only. */
+@keyframes scroll-cue {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.35;
+  }
+  50% {
+    transform: translateY(6px);
+    opacity: 0.9;
+  }
+}
+
+.scroll-cue {
+  animation: scroll-cue 2.2s ease-in-out infinite;
+}
+
+/* Gold sweep used behind primary CTAs on hover — a thin light pass rather
+   than a full color swap, kept subtle and fast. */
+.btn-sweep {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.btn-sweep::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(
+    115deg,
+    transparent 20%,
+    rgba(255, 255, 255, 0.35) 45%,
+    transparent 70%
+  );
+  transform: translateX(-120%);
+  transition: transform 0.6s ease;
+}
+
+.btn-sweep:hover::after {
+  transform: translateX(120%);
+}
+
+/* Thin gold hairline used as a section/heading accent instead of heavier
+   dividers — reads as "expensive" through restraint. */
+.hairline-gold {
+  height: 1px;
+  width: 48px;
+  background: linear-gradient(
+    90deg,
+    var(--color-gold) 0%,
+    rgba(212, 175, 55, 0) 100%
+  );
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

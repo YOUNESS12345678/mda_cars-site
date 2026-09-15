@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" rx="10" fill="#0A0A0A"/>
+  <rect x="4.5" y="4.5" width="55" height="55" rx="7" fill="none" stroke="#D4AF37" stroke-width="2.5"/>
+  <text x="32" y="40" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="21" font-weight="800" letter-spacing="1.5" fill="#FFFFFF">MDA</text>
+  <rect x="17" y="46" width="30" height="2.5" fill="#D4AF37"/>
+</svg>

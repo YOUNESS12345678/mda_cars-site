@@ -1,12 +1,10 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { CheckCircle2, Send } from "lucide-react";
+import { AlertCircle, CheckCircle2, Send } from "lucide-react";
 import {
-  buildBookingMessage,
   createReservation,
   logLead,
-  openWhatsApp,
   type BookingRequest,
 } from "@/lib/contact";
 
@@ -15,7 +13,6 @@ type BookingFormProps = {
   defaultVehicle?: string;
   source: string;
   idPrefix?: string;
-  whatsappNumber?: string;
 };
 
 const inputClass =
@@ -25,22 +22,26 @@ const labelClass =
   "mb-2 block text-[13px] font-medium tracking-[0.02em] text-steel";
 
 /**
- * Rental-request form. There is no automated booking backend: submitting
- * opens WhatsApp with a fully pre-filled message and mirrors the request to
- * /api/leads. The UI never claims a booking is "confirmed".
+ * Rental-request form. Submitting saves a real reservation through
+ * /api/reservations and mirrors the request to /api/leads. It never opens
+ * WhatsApp automatically, and the UI never claims a booking is confirmed.
  */
 export function BookingForm({
   vehicles,
   defaultVehicle = "",
   source,
   idPrefix = "rq",
-  whatsappNumber,
 }: BookingFormProps) {
   const [sent, setSent] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
   const today = useMemo(() => new Date().toISOString().slice(0, 10), []);
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    setError("");
+    setSubmitting(true);
+
     const data = new FormData(event.currentTarget);
     const payload: BookingRequest = {
       name: String(data.get("name") ?? "").trim(),
@@ -52,13 +53,21 @@ export function BookingForm({
       message: String(data.get("message") ?? "").trim() || undefined,
       source,
     };
-    openWhatsApp(buildBookingMessage(payload), whatsappNumber);
-    logLead(payload);
-    // PHASE 4: also creates a real Reservation record for /admin/reservations.
-    // carSlug is resolved from the same `vehicles` list already passed to
-    // this form — no UI/label change, just an extra lookup on submit.
+
+    // Resolve the selected vehicle to the real fleet row before saving.
     const carSlug = vehicles.find((v) => v.name === payload.vehicle)?.slug;
-    createReservation({ ...payload, carSlug });
+    const saved = await createReservation({ ...payload, carSlug });
+
+    if (!saved) {
+      setError("Impossible d’enregistrer votre demande pour le moment. Vérifiez votre connexion puis réessayez, ou contactez MDA CAR par téléphone.");
+      setSubmitting(false);
+      return;
+    }
+
+    // Keep the existing lead mirror for the admin lead history; it does not
+    // interrupt the reservation flow or open WhatsApp.
+    logLead(payload);
+    setSubmitting(false);
     setSent(true);
   }
 
@@ -73,7 +82,7 @@ export function BookingForm({
           Votre demande a été envoyée
         </p>
         <p className="max-w-md text-[15px] leading-relaxed text-steel">
-          WhatsApp s’est ouvert avec votre demande déjà rédigée. MDA CAR vous
+          Votre demande de réservation a bien été enregistrée. MDA CAR vous
           contactera rapidement pour confirmer la disponibilité du véhicule.
         </p>
         <button
@@ -193,17 +202,26 @@ export function BookingForm({
       </div>
 
       <div className="sm:col-span-2">
+        {error ? (
+          <p
+            role="alert"
+            className="mb-3 flex items-start gap-2 rounded-md border border-red-500/30 bg-red-950/20 px-3 py-2.5 text-[13px] leading-relaxed text-red-200"
+          >
+            <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
+            {error}
+          </p>
+        ) : null}
         <button
           type="submit"
-          className="btn-sweep inline-flex min-h-12 w-full items-center justify-center gap-2.5 rounded-lg bg-gold px-6 py-3 text-[15px] font-semibold tracking-[0.01em] text-night transition-colors duration-200 hover:bg-gold-hover sm:w-auto"
+          disabled={submitting}
+          className="btn-sweep inline-flex min-h-12 w-full items-center justify-center gap-2.5 rounded-lg bg-gold px-6 py-3 text-[15px] font-semibold tracking-[0.01em] text-night transition-colors duration-200 hover:bg-gold-hover disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
         >
           <Send className="h-[18px] w-[18px]" aria-hidden />
-          Demander les disponibilités
+          {submitting ? "Enregistrement…" : "Réserver maintenant"}
         </button>
         <p className="mt-3 text-[13px] leading-relaxed text-steel-dark">
-          En envoyant, WhatsApp s’ouvre avec votre demande déjà rédigée. MDA
-          CAR confirme la disponibilité par téléphone ou WhatsApp — aucune
-          réservation n’est validée automatiquement.
+          Votre demande est enregistrée directement dans notre système. MDA CAR
+          vous contactera ensuite pour confirmer la disponibilité et finaliser la location.
         </p>
       </div>
     </form>

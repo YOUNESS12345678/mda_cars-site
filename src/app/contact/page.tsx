@@ -33,8 +33,9 @@ export default async function ContactPage() {
         title="Contacter MDA CAR"
         description="Une question, une demande de disponibilité ou de tarif ? Choisissez le canal qui vous arrange — l’agence vous répond directement."
         image={{
-          src: "/images/mda-car-contact-gps-navigation.webp",
-          alt: "Voiture guidée par géolocalisation GPS dans les rues d’une ville, illustrant la simplicité pour joindre et localiser MDA CAR",
+          src: "/images/mda-car-contact-navigation-bg.webp",
+          mobileSrc: "/images/mda-car-contact-navigation-mobile.webp",
+          alt: "Illustration de navigation et de localisation pour MDA CAR, avec une voiture sur une carte et des repères de localisation",
         }}
         breadcrumbs={
           <Breadcrumbs

@@ -21,7 +21,7 @@ export function Hero() {
         alt="Voiture de location MDA CAR au coucher du soleil sur la route côtière, Souss-Massa"
         fill
         priority
-        quality={82}
+        quality={90}
         sizes="100vw"
         className="cinematic-image object-cover object-[75%_center] sm:hidden"
       />
@@ -30,7 +30,7 @@ export function Hero() {
         alt="Voiture de location MDA CAR au coucher du soleil sur la route côtière, Souss-Massa"
         fill
         priority
-        quality={82}
+        quality={90}
         sizes="100vw"
         className="cinematic-image hidden object-cover object-center sm:block"
       />

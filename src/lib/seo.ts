@@ -50,6 +50,7 @@ export function buildMetadata({
       card: "summary_large_image",
       title,
       description,
+      images: [ogImageUrl(ogTitle ?? title)],
     },
   };
 }

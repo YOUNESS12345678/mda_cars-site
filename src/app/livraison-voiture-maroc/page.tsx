@@ -14,7 +14,7 @@ import { JsonLd } from "@/components/JsonLd";
 export const metadata: Metadata = buildMetadata({
   title: "Livraison de voitures de location partout au Maroc | MDA CAR",
   description:
-    "MDA CAR peut organiser la livraison ou la remise d’une voiture de location au Maroc, selon la destination, la disponibilité et les modalités confirmées avant réservation.",
+    "MDA CAR organise la livraison ou la remise d’une voiture de location au Maroc, selon la destination, la disponibilité et les modalités convenues.",
   path: "/livraison-voiture-maroc",
   ogTitle: "Livraison de voitures de location partout au Maroc",
 });

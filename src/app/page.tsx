@@ -62,7 +62,7 @@ export default async function HomePage() {
               <SectionHeading
                 eyebrow="Demande de location"
                 title="Réservez votre voiture à Biougra"
-                description="Remplissez cette demande en une minute : WhatsApp s’ouvre avec votre message déjà rédigé, et l’équipe MDA CAR vous confirme rapidement la disponibilité du véhicule."
+                description="Remplissez cette demande en une minute : votre réservation est enregistrée directement, puis l’équipe MDA CAR vous contacte rapidement pour confirmer la disponibilité du véhicule."
               />
               <ul className="space-y-4">
                 {reassurances.map((item) => (
@@ -92,7 +92,6 @@ export default async function HomePage() {
                   vehicles={cars.map((v) => ({ slug: v.slug, name: v.name }))}
                   source="homepage"
                   idPrefix="rq"
-                  whatsappNumber={settings.whatsappNumber}
                 />
               </div>
             </Reveal>

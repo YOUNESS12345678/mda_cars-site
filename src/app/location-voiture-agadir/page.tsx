@@ -56,7 +56,7 @@ export default async function LocationAgadirPage() {
         title="Location de voitures à Agadir"
         description="Vous cherchez une voiture de location à Agadir ? MDA CAR sert toute la région depuis Biougra — l’organisation se fait simplement, par téléphone ou WhatsApp."
         image={{
-          src: "/images/mda-car-agadir-corniche-location-voiture.jpg",
+          src: "/images/mda-car-agadir-corniche-location-voiture.webp",
           alt: "Location de voiture MDA CAR sur la corniche d'Agadir",
         }}
         breadcrumbs={

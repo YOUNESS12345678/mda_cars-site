@@ -54,7 +54,7 @@ export default async function LocationBiougraPage() {
         title="Location de voitures à Biougra"
         description="MDA CAR est installée à Biougra : louez votre voiture directement sur place, sans détour par Agadir, avec un interlocuteur local et joignable."
         image={{
-          src: "/images/mda-car-biougra-route-souss-massa.jpg",
+          src: "/images/mda-car-biougra-route-souss-massa.webp",
           alt: "Route de la région de Biougra, Souss-Massa",
         }}
         breadcrumbs={

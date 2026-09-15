@@ -2,9 +2,8 @@ import { whatsappHref } from "./site";
 import { buildWhatsAppHref } from "./business-settings-constants";
 
 /**
- * WhatsApp-first conversion helpers (client-safe).
- * Every form on the site converts the request into a pre-filled WhatsApp
- * message and mirrors it to /api/leads as a server-side backup log.
+ * Client-safe contact and reservation helpers. Reservation forms save directly
+ * through /api/reservations; WhatsApp remains available for direct contact.
  */
 
 export type BookingRequest = {
@@ -48,41 +47,40 @@ export function buildContactMessage(input: {
   ].join("\n");
 }
 
-/** PHASE 7: accepts the database-backed WhatsApp number resolved by the
- *  Server Component that rendered the form (BookingForm/ContactForm), so
- *  this client-side "open WhatsApp" action uses the same number the admin
- *  configured — not the static fallback — while staying usable with no
- *  number for any caller that genuinely has none yet. */
+/** Opens the database-configured WhatsApp number for direct contact. */
 export function openWhatsApp(message: string, whatsappNumber?: string): void {
   const href = whatsappNumber ? buildWhatsAppHref(whatsappNumber, message) : whatsappHref(message);
   window.open(href, "_blank", "noopener,noreferrer");
 }
 
-/** Fire-and-forget backup log; never blocks the WhatsApp opening. */
+/** Fire-and-forget lead mirror; never blocks the reservation flow. */
 export function logLead(payload: BookingRequest): void {
   fetch("/api/leads", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
   }).catch(() => {
-    /* WhatsApp already delivered the request — stay silent. */
+    /* The reservation has already been saved — stay silent. */
   });
 }
 
 /**
- * PHASE 4 — additive alongside `logLead`, not a replacement: `carSlug` lets
- * the server best-effort link the request to a real fleet row (see
- * lib/reservations.ts's resolveCarId) without changing the WhatsApp message
- * or the `leads` backup log, which still use the plain vehicle name.
- * Fire-and-forget for the same reason as `logLead` — WhatsApp already
- * delivered the request; this only feeds /admin/reservations.
+ * Creates a real reservation in the database. Unlike the old WhatsApp-first
+ * flow, submitting the reservation form does not open another app or tab.
+ * The caller can use the returned boolean to show an honest success/error
+ * state in the UI.
  */
-export function createReservation(payload: BookingRequest & { carSlug?: string }): void {
-  fetch("/api/reservations", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-  }).catch(() => {
-    /* WhatsApp already delivered the request — stay silent. */
-  });
+export async function createReservation(
+  payload: BookingRequest & { carSlug?: string },
+): Promise<boolean> {
+  try {
+    const response = await fetch("/api/reservations", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    return response.ok;
+  } catch {
+    return false;
+  }
 }

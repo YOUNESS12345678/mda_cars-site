@@ -11,7 +11,7 @@ type PageHeaderProps = {
   /** Optional cinematic background photo (page-specific, per page). Falls
    *  back to the plain coal panel when omitted, so pages that don't have a
    *  dedicated photo yet are unaffected. */
-  image?: { src: string; alt: string };
+  image?: { src: string; alt: string; mobileSrc?: string };
 };
 
 /** Inner-page header with correct offset under the fixed site header. */
@@ -34,10 +34,22 @@ export function PageHeader({
             alt={image.alt}
             fill
             priority
-            quality={80}
+            quality={90}
             sizes="100vw"
-            className="cinematic-image object-cover"
+            className={`cinematic-image object-cover ${image.mobileSrc ? "hidden sm:block" : ""}`}
           />
+          {image.mobileSrc && (
+            <Image
+              src={image.mobileSrc}
+              alt=""
+              fill
+              priority
+              quality={90}
+              sizes="100vw"
+              className="cinematic-image object-cover sm:hidden"
+              aria-hidden
+            />
+          )}
           <div
             aria-hidden
             className="absolute inset-0 bg-gradient-to-b from-night/80 via-night/55 to-night"

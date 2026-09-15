@@ -4,7 +4,6 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, BadgeCheck } from "lucide-react";
 import { buildMetadata } from "@/lib/seo";
 import { getPublishedCarBySlug, getPublishedCars, getRelatedPublishedCars } from "@/lib/cars";
-import { getSiteSettings } from "@/lib/business-settings";
 import { containerClass, sectionClass } from "@/lib/ui";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { VehicleGallery } from "@/components/VehicleGallery";
@@ -55,13 +54,10 @@ export default async function VehiclePage({ params }: VehiclePageProps) {
   const vehicle = await getPublishedCarBySlug(slug);
   if (!vehicle) notFound();
 
-  const [related, allCars, settings] = await Promise.all([
+  const [related, allCars] = await Promise.all([
     getRelatedPublishedCars(vehicle.slug),
     getPublishedCars(),
-    getSiteSettings(),
   ]);
-  const bookingMessage = `Bonjour MDA CAR, je souhaite réserver la ${vehicle.name}. Est-elle disponible ? Merci.`;
-
   return (
     <>
       <div className={`${containerClass} pt-20 md:pt-24`}>
@@ -129,11 +125,12 @@ export default async function VehiclePage({ params }: VehiclePageProps) {
               </p>
 
               <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-                <WhatsAppButton
-                  label={vehicle.isAvailable === false ? "Demander sa disponibilité" : "Réserver cette voiture"}
-                  variant="gold"
-                  message={bookingMessage}
-                />
+                <a
+                  href="#reservation"
+                  className="btn-sweep inline-flex min-h-12 items-center justify-center rounded-lg bg-gold px-6 py-3 text-[15px] font-semibold tracking-[0.01em] text-night transition-colors duration-200 hover:bg-gold-hover"
+                >
+                  {vehicle.isAvailable === false ? "Demander sa disponibilité" : "Réserver cette voiture"}
+                </a>
                 <WhatsAppButton label="Contacter sur WhatsApp" />
                 <PhoneButton variant="outline" showNumber />
               </div>
@@ -165,7 +162,7 @@ export default async function VehiclePage({ params }: VehiclePageProps) {
               <SectionHeading
                 eyebrow="Disponibilités"
                 title={`Demander la ${vehicle.name}`}
-                description="Indiquez vos dates : WhatsApp s’ouvre avec votre demande déjà rédigée, et l’équipe confirme la disponibilité du véhicule."
+                description="Remplissez le formulaire de réservation. Votre demande sera enregistrée directement par MDA CAR, puis notre équipe vous contactera pour confirmer la disponibilité."
               />
               <div
                 id="reservation"
@@ -176,7 +173,6 @@ export default async function VehiclePage({ params }: VehiclePageProps) {
                   defaultVehicle={vehicle.name}
                   source={`vehicule:${vehicle.slug}`}
                   idPrefix="vh"
-                  whatsappNumber={settings.whatsappNumber}
                 />
               </div>
             </Reveal>

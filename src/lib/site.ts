@@ -4,13 +4,19 @@
  * placeholder tokens required by the brand spec and MUST be replaced
  * with real information before launch.
  */
+const configuredSiteUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim();
+const vercelProductionHost = process.env.VERCEL_PROJECT_PRODUCTION_URL?.trim();
+const resolvedSiteUrl =
+  configuredSiteUrl ||
+  (vercelProductionHost ? `https://${vercelProductionHost}` : "https://mdacars-site.vercel.app");
+
 export const site = {
   name: "MDA CAR",
   tagline: "Location de voitures",
-  url: (process.env.NEXT_PUBLIC_SITE_URL ?? "https://mdacars-site.vercel.app").replace(
-    /\/+$/,
-    "",
-  ),
+  // One canonical origin for metadata, sitemap and structured data. On
+  // Vercel, fall back to the production project host rather than a preview
+  // deployment URL. For a custom domain, set NEXT_PUBLIC_SITE_URL.
+  url: resolvedSiteUrl.replace(/\/+$/, ""),
 
   // Confirmed contact data
   phoneDisplay: "06 50 91 11 22",

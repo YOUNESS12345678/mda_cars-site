@@ -1,0 +1,52 @@
+MDA CAR — Phase 7 Integration Manifest
+========================================
+
+Base project:
+mda-car-website-admin-phase6-buildfix(2).zip
+
+Integrated source:
+mda-car-phase7-merged(1).zip
+
+Integration policy:
+- Kept the main project package.json and package-lock.json.
+- Kept all main-project files not present in the Phase 7 changed-files package.
+- Applied the 26 Phase 7 source files over their corresponding main-project files.
+- No .git history was changed by this integration.
+- No git reset/checkout/pull/add/commit was performed.
+- No environment secrets were modified.
+
+Important:
+- The Phase 7 source contains some mojibake/encoding artifacts visible in strings/comments
+  (for example vÃ©hicule / â€”). These should be cleaned after functional validation.
+- Before replacing the live working directory, run:
+    npm run typecheck
+    npm run lint
+    npm run build
+
+Overwritten/integrated files:
+- src/lib/jsonld.ts
+- src/lib/business-settings.ts
+- src/lib/contact.ts
+- src/lib/business-settings-constants.ts
+- src/lib/cars.ts
+- src/app/layout.tsx
+- src/app/page.tsx
+- src/app/sitemap.ts
+- src/app/admin/(dashboard)/settings/actions.ts
+- src/app/admin/(dashboard)/cars/actions.ts
+- src/app/contact/page.tsx
+- src/app/location-voiture-agadir/page.tsx
+- src/app/location-voiture-biougra/page.tsx
+- src/app/nos-voitures/page.tsx
+- src/app/nos-voitures/[slug]/page.tsx
+- src/components/SiteChrome.tsx
+- src/components/WhatsAppButton.tsx
+- src/components/ContactForm.tsx
+- src/components/FloatingWhatsApp.tsx
+- src/components/PhoneButton.tsx
+- src/components/BookingForm.tsx
+- src/components/Header.tsx
+- src/components/MobileMenu.tsx
+- src/components/BookingCTA.tsx
+- src/components/Footer.tsx
+- src/components/SocialLinks.tsx
